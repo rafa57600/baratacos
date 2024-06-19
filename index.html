@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bara - Linktree</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <link rel="icon" type="image/x-icon" href="https://blogger.googleusercontent.com/img/a/AVvXsEgXhG6Ifojbi9af2jhJj_wpJIxWUxNByu_n_-qH1gkWiVV5oAuQrO5-_QVdKJxOuZRqH-HGOiDmZ1lrWD_D9KsSbYApvAaOzlA6rCIB3qoDY0_KyaOrzlUoAcxN0ei8V221qmBy5oBK6YjG9l5OYcesLrw80mwlUT_IrKT0Vk-Wdew77lje_k_LAOx5qw=w578-h578">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #282828;
+            width: 100%;
+            height: 100%;
+            --color: rgba(114, 114, 114, 0.3);
+            background-color: #191a1a;
+            background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+                linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+            background-size: 55px 55px;
+        }
+
+        .container {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-bottom: 100px;
+            background-color: #191a1a;
+            background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+                linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+            background-size: 55px 55px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .button {
+            background-color: #e84118;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .button:hover {
+            background-color: #d63d17;
+        }
+
+        .random-menu-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .random-menu-popup p {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .random-menu-popup img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #e84118;
+            font-size: 20px;
+        }
+
+        .horaires-section {
+            margin-top: 20px;
+        }
+
+        .current-hours {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .all-hours {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .show-all-button {
+            background-color: #e84118;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #e84218ea;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .logo {
+            width: 250px;
+            height: auto;
+            margin-top: 30px;
+            border-radius: 50%;
+            text-align: center;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 10px 0;
+            font-size: 24px;
+            color: #e84118;
+        }
+
+        .gallery-section {
+            margin-top: 20px;
+        }
+
+        .gallery-section h2 {
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .recent-gallery {
+            display: flex;
+            overflow: hidden;
+            white-space: nowrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px;
+       
+            border-radius: 10px;
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .recent-gallery-content {
+            display: flex;
+            gap: 10px;
+            animation: scroll 20s linear infinite;
+        }
+
+        .recent-gallery img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .gallery img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 5px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        .google-maps {
+            align-items: center;
+            padding: 5px;
+            background-color: #e84118;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-maps iframe {
+            width: 100%;
+            height: 300px;
+            border: 0;
+        }
+
+        .review-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 16px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .review-link:hover {
+            text-decoration: underline;
+        }
+
+        h2 {
+            color: #fff;
+        }
+
+.rg {
+    max-width: 500px;
+   
+    left: -15px;
+    position: static;
+    display: grid;
+   
+    overflow: hidden;
+}
+
+
+
+
+
+
+
+        footer {
+    background-color: #e84218ea;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    z-index: 2;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="https://blogger.googleusercontent.com/img/a/AVvXsEgXhG6Ifojbi9af2jhJj_wpJIxWUxNByu_n_-qH1gkWiVV5oAuQrO5-_QVdKJxOuZRqH-HGOiDmZ1lrWD_D9KsSbYApvAaOzlA6rCIB3qoDY0_KyaOrzlUoAcxN0ei8V221qmBy5oBK6YjG9l5OYcesLrw80mwlUT_IrKT0Vk-Wdew77lje_k_LAOx5qw=w578-h578" alt="Barbershop Logo" class="logo">
+            <h1>Bara Tacos</h1>
+            <div class="current-hours" id="currentHours"></div>
+        </header>
+        <div id="horaires" class="horaires-section">
+            <div class="current-hours" id="currentHours"></div>
+            <button class="show-all-button" onclick="toggleAllHours()">Voir tous les horaires</button>
+            <div class="all-hours" id="allHours">
+                <p>Lundi: 11h–14h, 16h–22h</p>
+                <p>Mardi: 11h–14h, 16h–22h</p>
+                <p>Mercredi: 11h–14h, 16h–22h</p>
+                <p>Jeudi: 11h–14h, 16h–22h</p>
+                <p>Vendredi: 11h–14h, 16h–22h</p>
+                <p>Samedi: 11h–14h, 16h–22h</p>
+                <p>Dimanche: 16h–22h</p>
+            </div>
+        </div>
+        <div class="buttons">
+            <a href="https://baramenu.blogspot.com" class="button"><i class="fas fa-utensils"></i> Notre Menu / Unser Menü</a>
+            <a href="javascript:void(0)" class="button" onclick="menuAleatoire()"><i class="fas fa-random"></i> Menu Aléatoire</a>
+            <a href="https://g.page/r/CX4VI7xB-KcxEBM/review" target="_blank" class="button"><i class="fas fa-star"></i> Notez-nous sur Google</a>
+            <a href="https://www.facebook.com/bara.forbach" target="_blank" class="button"><i class="fab fa-facebook"></i> Facebook</a>
+            <a href="https://www.instagram.com/bara.tacos" target="_blank" class="button"><i class="fab fa-instagram"></i> Instagram</a>
+            <a href="https://www.ubereats.com/fr/store/le-bara/jIbCsXLRXziL4a14vxKrAA?ps=1&utm_campaign=place-action-link&utm_medium=organic&utm_source=google" target="_blank" class="button"><i class="fas fa-motorcycle"></i> Commander avec Uber Eats</a>
+            <a href="tel:+33387139802" class="button"><i class="fas fa-phone"></i> Contactez-nous</a>
+        </div>
+        <div id="randomMenuPopup" class="random-menu-popup">
+            <span id="closePopup" class="close-popup">&times;</span>
+            <img id="platImage" src="" alt="Image du plat">
+            <p id="platName"></p>
+            <p id="platPrice"></p>
+            <p id="platSize"></p>
+        </div>
+        <div class="gallery-section" id="globalGallerySection">
+            <h2>La Famille Galerie</h2>
+            <div class="rg">
+            <div id="recentGallery" class="recent-gallery">
+                <div class="recent-gallery-content"></div></div>
+            </div>
+            <div id="gallery" class="gallery"></div>
+        </div>
+        <h2>Nous Trouver et Donner votre Avis</h2>
+        <div class="google-maps">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d283.7698391587713!2d6.900726832234982!3d49.18677253144222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4795b2ec4e7ec26d%3A0x31a7f841bc23157e!2zLsaBQVLDgFRBQ09TIEZPUkJBQ0g!5e0!3m2!1sen!2sfr!4v1715193433046!5m2!1sen!2sfr"
+                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy">
+            </iframe>
+            <br>
+            <a href="https://g.page/r/CX4VI7xB-KcxEBM/review" target="_blank" class="review-link">
+                <i class="fas fa-star"></i> Laissez-nous un avis sur Google
+            </a>
+        </div>
+    </div>
+    <script>
+        const menuItems = [
+            {
+                name: "Menu sandwich kebab",
+                price: "12,00 €",
+                size: "Servi avec frites et boisson 33 cl au choix.",
+                image: "https://blogger.googleusercontent.com/img/a/AVvXsEjeDbZg3o6zOsk0redsP5dpHufHvD9HwlKH70bEdPaqWt9uNQLRGsxCEdhXu-oVaptV0cSMXCs-S15-_JQQ6uMhJ6cJ2YOADIiUc544139K0Zo_o9Rk-q4xKTPD7FuVHO8A61eWU7HaShK7S6tZSe4jDSVDJws6WGo1-kHX1BPyAXYrdMCklXQ6NPWBLQ"
+            },
+            {
+                name: "Menu tacos 1 viande",
+                price: "13,00 €",
+                size: "1 viande au choix, servi avec frites et boisson 33 cl au choix avec 2 sauces au choix",
+                image: "https://blogger.googleusercontent.com/img/a/AVvXsEhDvKMlGHJM5Qe8kihBlKVUHWURy2A6aiubCTCRu1N8RNtZOhbDJmUzOzFDNE5EPhs0p-qThBf1isn_Ng4zeySONWCFbhw7kBMVLmaILQJHulOLYut8ec3TjHWYPmstBfFvK-ZVYvRd0MYzyaLu66QYfvhjlkkUtbLtw7feTTyWtjWrxKclCp_XsfqbEg"
+            },
+            {
+                name: "Menu double fun burger",
+                price: "13,00 €",
+                size: "Servi avec frites et boisson 33 cl au choix.",
+                image: "https://blogger.googleusercontent.com/img/a/AVvXsEhd7bYeKTVGIIXlptCRZmRtiiUb7djuJrpB93MabgU8JMHR8XBE9CylU_i3Hjbnv0n2IEgKhRkoxuhGu94yEBa-U7tfFBI6N4AjyoiwadOTjnYJWGv5oWiSAwqCYnfuBkrZ9eGUX-XdQUH8xVna5fjR_aIkb4eUuNlVfTbxFp_fCKcx_aetYAXV_BHAMg"
+            },
+            {
+                name: "Menu enfant",
+                price: "8,00 €",
+                size: "1 petit sandwich kebab, servi avec frites et Capri-Sun 20 cl.",
+                image: "https://blogger.googleusercontent.com/img/a/AVvXsEhxTQVuGGEvq0JtokVIEy0fwdG5O8CJc-rHlNDsCU2X183glgxuVga9PGrkHlklYNf5yFo_CXUQ2SKxkR_OseKInOxsGug0ZVqVWopOnwvcdpeGZG94CjoZFtTaJnXqB98eHfwS5i18X87dm0ocCjQRrO5PXxthH_shojNf2qtQ2kk5X_EWBoi-9CAYFQ"
+            },
+            {
+                name: "assiette brochette de poulet",
+                price: "14,00 €",
+                size: "",
+                image: "https://blogger.googleusercontent.com/img/a/AVvXsEjpBQCs0fXFXQuAVUv9JF9ODEeJ9aVVvx1mL8FcbVJY22v2DSgZMSLlZil-NaxFpR0na9_BLAyBrwQXs3wdm-G9ie3hlhL1ZbccNXhSq6ia2vcNCJodA3kvbkrXskY4si3GnJuZZtuFDYF3Bn_fqdXjsrLEvFtuoxiEE4Obx-WCv9zgp5ZdSNpdnYoO_w"
+            }
+        ];
+
+        function menuAleatoire() {
+            const randomIndex = Math.floor(Math.random() * menuItems.length);
+            const randomItem = menuItems[randomIndex];
+            
+            document.getElementById('platName').innerText = `Nom: ${randomItem.name}`;
+            document.getElementById('platPrice').innerText = `Prix: ${randomItem.price}`;
+            document.getElementById('platSize').innerText = `Taille: ${randomItem.size}`;
+            document.getElementById('platImage').src = randomItem.image;
+            document.getElementById('randomMenuPopup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('randomMenuPopup').style.display = 'none';
+        }
+
+        document.getElementById('closePopup').addEventListener('click', closePopup);
+        document.addEventListener('click', function(event) {
+            const popup = document.getElementById('randomMenuPopup');
+            if (popup.style.display === 'block' && !popup.contains(event.target) && !event.target.classList.contains('button')) {
+                closePopup();
+            }
+        });
+
+        const horaires = {
+            "Lundi": "11h–14h, 16h–22h",
+            "Mardi": "11h–14h, 16h–22h",
+            "Mercredi": "11h–14h, 16h–22h",
+            "Jeudi": "11h–14h, 16h–22h",
+            "Vendredi": "11h–14h, 16h–22h",
+            "Samedi": "11h–14h, 16h–22h",
+            "Dimanche": "16h–22h"
+        };
+
+        function getCurrentDay() {
+            const days = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+            const today = new Date().getDay();
+            return days[today];
+        }
+
+        function displayCurrentHours() {
+            const currentDay = getCurrentDay();
+            document.getElementById('currentHours').innerText = `Aujourd'hui (${currentDay}): ${horaires[currentDay]}`;
+        }
+
+        function toggleAllHours() {
+            const allHours = document.getElementById('allHours');
+            allHours.style.display = allHours.style.display === 'none' || allHours.style.display === '' ? 'block' : 'none';
+        }
+
+        displayCurrentHours();
+    </script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjZ8eZet3qW53LVqpSP_B21NdY5fH_pfg",
+            authDomain: "bara2024-a6eb8.firebaseapp.com",
+            databaseURL: "https://bara2024-a6eb8-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "bara2024-a6eb8",
+            storageBucket: "bara2024-a6eb8.appspot.com",
+            messagingSenderId: "647208776082",
+            appId: "1:647208776082:web:df62c25fca4ebef478d14b",
+            measurementId: "G-PWZ269MVD8"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        function fetchAllGalleryImages() {
+            console.log('Fetching all gallery images.');
+            const gallery = document.getElementById('gallery');
+            const recentGalleryContent = document.querySelector('.recent-gallery-content');
+            gallery.innerHTML = ''; // Clear the gallery
+            recentGalleryContent.innerHTML = ''; // Clear the recent gallery
+
+            database.ref('galleryImages').once('value', function (snapshot) {
+                const images = [];
+                snapshot.forEach(function (childSnapshot) {
+                    images.push(childSnapshot.val());
+                });
+
+                images.reverse(); // Reverse the array to get the most recent images first
+
+                // Display the most recent 5 images in the recent gallery
+                images.slice(0, 5).forEach(function (data) {
+                    const img = document.createElement('img');
+                    img.src = data.url;
+                    recentGalleryContent.appendChild(img);
+                });
+
+                // Display all images in the main gallery
+                images.forEach(function (data) {
+                    const img = document.createElement('img');
+                    img.src = data.url;
+                    img.classList.add('gallery-img');
+
+                    const imageContainer = document.createElement('div');
+                    imageContainer.appendChild(img);
+
+                    gallery.appendChild(imageContainer);
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAllGalleryImages();
+        });
+    </script>
+    <footer>
+        <p>&copy; 2024 Bara Tacos. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
